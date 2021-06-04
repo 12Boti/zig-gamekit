@@ -84,7 +84,7 @@ pub const Input = struct {
             sdl.SDL_CONTROLLERBUTTONDOWN, sdl.SDL_CONTROLLERBUTTONUP => std.debug.warn("SDL_CONTROLLERBUTTONUP/DOWN\n", .{}),
             sdl.SDL_CONTROLLERDEVICEADDED, sdl.SDL_CONTROLLERDEVICEREMOVED => std.debug.warn("SDL_CONTROLLERDEVICEADDED/REMOVED\n", .{}),
             sdl.SDL_CONTROLLERDEVICEREMAPPED => std.debug.warn("SDL_CONTROLLERDEVICEREMAPPED\n", .{}),
-            sdl.SDL_TEXTEDITING,sdl.SDL_TEXTINPUT => {
+            sdl.SDL_TEXTEDITING, sdl.SDL_TEXTINPUT => {
                 self.text_input_buffer = event.text.text;
                 const end = std.mem.indexOfScalar(u8, &self.text_input_buffer, 0).?;
                 self.text_input = self.text_input_buffer[0..end];
@@ -94,6 +94,8 @@ pub const Input = struct {
     }
 
     fn handleKeyboardEvent(self: *Input, evt: *sdl.SDL_KeyboardEvent) void {
+        if (evt.repeat != 0) return;
+
         const scancode = @enumToInt(evt.keysym.scancode);
         self.dirty_keys.append(scancode);
 
